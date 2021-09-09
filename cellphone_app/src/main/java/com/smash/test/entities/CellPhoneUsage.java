@@ -3,6 +3,9 @@ package com.smash.test.entities;
 import javax.persistence.*;
 import java.time.LocalDate;
 
+/**
+ * Entity class to map CellPhoneUsage table structure
+ */
 @Entity
 @Table(name = "CellPhoneUsage")
 public class CellPhoneUsage {
@@ -12,7 +15,11 @@ public class CellPhoneUsage {
     @Column(name = "Id")
     private Long id;
 
-    @ManyToOne (fetch = FetchType.LAZY)
+    /**
+     * Using EAGER intentionally since we will need the CellPhone reference for some stream operations
+     * Ideally we should use LAZY to avoid performance issues when entities are huge or not neded, but for this test EAGER will make things easier.
+     */
+    @ManyToOne (fetch = FetchType.EAGER)
     @JoinColumn(name = "EmployeeId")
     private CellPhone cellPhone;
 
@@ -25,10 +32,16 @@ public class CellPhoneUsage {
     @Column(name = "TotalData")
     private double totalData;
 
+    /**
+     * Default constructor
+     */
     public CellPhoneUsage(){
 
     }
 
+    /*
+    Getters and setters for the attributes
+     */
     public Long getId() {
         return id;
     }
@@ -69,6 +82,11 @@ public class CellPhoneUsage {
         this.totalData = totalData;
     }
 
+    /**
+     * Overwrite the equals method to make sure comparisons and other operations like distinct work as expected
+     * @param other The object to compare
+     * @return True if both objects are identical
+     */
     @Override
     public boolean equals(Object other){
         if(other != null && other instanceof CellPhoneUsage){
@@ -84,6 +102,10 @@ public class CellPhoneUsage {
         return false;
     }
 
+    /**
+     * Overwrite default hashCode implementation to be able to use operations like distinct
+     * @return The object hash
+     */
     @Override
     public int hashCode(){
         return this.getId().intValue() + this.getCellPhone().hashCode() * 33;
